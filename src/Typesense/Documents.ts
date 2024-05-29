@@ -220,7 +220,12 @@ export default class Documents<T extends DocumentSchema = {}>
     })
 
     if (Array.isArray(documents)) {
-      const resultsInJSONFormat = resultsInJSONLFormat.split('\n').map((r) => JSON.parse(r)) as ImportResponse[]
+      const resultsInJSONFormat = resultsInJSONLFormat
+        .split('\n')
+        .filter(Boolean)
+        .map((r) => {
+          return JSON.parse(r)
+        }) as ImportResponse[]
       const failedItems = resultsInJSONFormat.filter((r) => r.success === false)
       if (failedItems.length > 0) {
         throw new ImportError(
@@ -251,3 +256,4 @@ export default class Documents<T extends DocumentSchema = {}>
     return this.apiCall.get<ReadStream>(this.endpointPath('export'), options, { responseType: 'stream' })
   }
 }
+
